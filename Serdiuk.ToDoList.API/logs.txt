@@ -1,0 +1,74 @@
+[40m[32minfo[39m[22m[49m: Program[0]
+      Configured Identity service.
+[40m[32minfo[39m[22m[49m: Program[0]
+      Configured EF Core.
+[40m[32minfo[39m[22m[49m: Program[0]
+      Configured Swagger.
+[40m[32minfo[39m[22m[49m: Program[0]
+      Configured Repository services.
+[40m[32minfo[39m[22m[49m: Program[0]
+      Configured JWT authentication scheme.
+warn: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[60]
+      Storing keys in a directory '/root/.aspnet/DataProtection-Keys' that may not be persisted outside of the container. Protected data will be unavailable when container is destroyed.
+warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
+      No XML encryptor configured. Key {6e160352-e475-413c-a1f8-ae5429cac84b} may be persisted to storage in unencrypted form.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://[::]:443
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://[::]:80
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /app/
+[40m[32minfo[39m[22m[49m: Program[0]
+      Configured Identity service.
+[40m[32minfo[39m[22m[49m: Program[0]
+      Configured EF Core.
+[40m[32minfo[39m[22m[49m: Program[0]
+      Configured Swagger.
+[40m[32minfo[39m[22m[49m: Program[0]
+      Configured Repository services.
+[40m[32minfo[39m[22m[49m: Program[0]
+      Configured JWT authentication scheme.
+warn: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[60]
+      Storing keys in a directory '/root/.aspnet/DataProtection-Keys' that may not be persisted outside of the container. Protected data will be unavailable when container is destroyed.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://[::]:443
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://[::]:80
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /app/
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Serdiuk.ToDoList.API.Controllers.AccountController[0]
+      user@example.com created
+info: Serdiuk.ToDoList.API.Controllers.AccountController[0]
+      user@example.com login
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 0 entities to in-memory store.
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Serdiuk.ToDoList.API.Controllers.TodoController[0]
+      Create new todo to: user@example.com with a940151f-62b5-486a-a575-d25e4deb76a3 Id
+info: Serdiuk.ToDoList.API.Controllers.TodoController[0]
+      Returned all todos to: user@example.com
+info: Serdiuk.ToDoList.API.Controllers.TodoController[0]
+      Returned todo to: user@example.com with a940151f-62b5-486a-a575-d25e4deb76a3 Id
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Serdiuk.ToDoList.API.Controllers.TodoController[0]
+      Returned todo to: user@example.com with a940151f-62b5-486a-a575-d25e4deb76a3 Id
+info: Serdiuk.ToDoList.API.Controllers.TodoController[0]
+      Returned completed todos to: user@example.com
+info: Serdiuk.ToDoList.API.Controllers.TodoController[0]
+      Returned incompleted todos to: user@example.com
+info: Microsoft.EntityFrameworkCore.Update[30100]
+      Saved 1 entities to in-memory store.
+info: Serdiuk.ToDoList.API.Controllers.TodoController[0]
+      Delete todo with a940151f-62b5-486a-a575-d25e4deb76a3 Id from user user@example.com
