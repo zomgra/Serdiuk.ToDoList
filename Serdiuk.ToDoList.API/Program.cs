@@ -1,5 +1,6 @@
 using Serdiuk.ToDoList.API.Extensions;
 using Serdiuk.ToDoList.Application.Middlewares;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +14,22 @@ var logger = LoggerFactory.Create(config =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.ConfigureIdentity(logger);
+builder.Services.AddCors(b =>
+{
+    b.AddDefaultPolicy(p =>
+    {
+        p.AllowAnyMethod()
+        .AllowAnyHeader()
+        .WithOrigins("http://localhost:3000")
+        .AllowCredentials();
+    });
+});
+
 builder.Services.ConfigureEntityFramework(logger);
-builder.Services.ConfigureSwagger(logger);
-builder.Services.ConfigureRepository(logger);
+builder.Services.ConfigureIdentity(logger);
 builder.Services.ConfigureJWTBearer(logger, builder.Configuration);
+builder.Services.ConfigureSwagger(logger, builder.Configuration);
+builder.Services.ConfigureRepository(logger);
 
 
 var app = builder.Build();
@@ -26,7 +38,12 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "TodoApi");
+        options.DocumentTitle = "TodoApi";
+        options.DocExpansion(DocExpansion.List);
+    });
 }
 
 app.UseMiddleware<TodoExceptionHandlerMiddleware>();
@@ -34,7 +51,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseCors();
 app.MapControllers();
 
 app.Run();

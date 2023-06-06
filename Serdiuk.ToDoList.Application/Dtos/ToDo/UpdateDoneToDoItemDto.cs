@@ -6,5 +6,7 @@ namespace Serdiuk.ToDoList.Application.Dtos.ToDo
     {
         [Required]
         public Guid Id { get; set; }
+        [Required]
+        public bool SetDone { get; set; }
     }
 }

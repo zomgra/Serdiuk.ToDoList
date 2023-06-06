@@ -1,26 +1,32 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Serdiuk.ToDoList.Application.Dtos.Account;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Serdiuk.ToDoList.API.Controllers
 {
     [ApiController]
-    [Route("api/account")]
+    [Route("account")]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<AccountController> _logger;
         private readonly SignInManager<IdentityUser> _signinManager;
+        private readonly IConfiguration _configuration;
 
         public AccountController(UserManager<IdentityUser> userManager,
             ILogger<AccountController> logger,
-            SignInManager<IdentityUser> signinManager)
+            SignInManager<IdentityUser> signinManager,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _logger = logger;
             _signinManager = signinManager;
+            _configuration = configuration;
         }
         [AllowAnonymous]
         [HttpPost("login")]
@@ -45,9 +51,26 @@ namespace Serdiuk.ToDoList.API.Controllers
                 return Unauthorized();
             }
             _logger.LogInformation($"User {userLogin.Email} logged in successfully.");
+            var claims = new[]
+               {
+                    new Claim(JwtRegisteredClaimNames.Sub, userLogin.Email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
 
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Authentication:JWT:SecurityKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            return Ok();
+            var token = new JwtSecurityToken(
+                _configuration["Authentication:JWT:Issuer"],
+                _configuration["Authentication:JWT:Audience"],
+                claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: creds
+            );
+
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return Ok(new { AccessToken = tokenString });
         }
         [AllowAnonymous]
         [HttpPost("register")]
@@ -86,7 +109,25 @@ namespace Serdiuk.ToDoList.API.Controllers
                     _logger.LogInformation("{Email} created", user.Email);
                      await _signinManager.SignInAsync(user, false);
                     _logger.LogInformation("{Email} login", user.Email);
-                    return Ok();
+
+                    var claims = new[]
+                    {
+                        new Claim(JwtRegisteredClaimNames.Sub, userRegister.Email),
+                        new Claim(JwtRegisteredClaimNames.Jti, user.Id)
+                    };
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Authentication:JWT:SecurityKey"]));
+                    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                    var token = new JwtSecurityToken(
+                        issuer: _configuration["Authentication:JWT:Issuer"],
+                        audience: _configuration["Authentication:JWT:Audience"],
+                        claims,
+                        expires: DateTime.Now.AddDays(1),
+                        signingCredentials: creds
+                    );
+
+                    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+                    return Ok(new { AccessToken = tokenString });
                 }
                 else
                 {

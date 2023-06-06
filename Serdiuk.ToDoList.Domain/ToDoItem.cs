@@ -9,10 +9,10 @@ namespace Serdiuk.ToDoList.Domain
         [Required, Key]
         public Guid Id { get; set; }
         [Required]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         [Required, MaxLength(256)]
         public string Title { get; set; } = null!;
         public bool IsDone { get; set; }
-        public DateTime Added { get; set; }
+        public DateTime Date { get; set; }
     }
 }

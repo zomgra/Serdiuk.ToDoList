@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serdiuk.ToDoList.Application.Common.Interfaces;
 using Serdiuk.ToDoList.Application.Services;
 using Serdiuk.ToDoList.Persistance;
+using System.Text;
 
 namespace Serdiuk.ToDoList.API.Extensions
 {
@@ -13,23 +15,24 @@ namespace Serdiuk.ToDoList.API.Extensions
         public static void ConfigureEntityFramework(this IServiceCollection services, ILogger logger)
         {
             services.AddDbContext<AppDbContext>(o => o.UseInMemoryDatabase("APP_DEV"));
-            services.AddTransient<IAppDbContext, AppDbContext>();   
+            services.AddTransient<IAppDbContext, AppDbContext>();
             logger.LogInformation("Configured EF Core.");
         }
         public static void ConfigureJWTBearer(this IServiceCollection services, ILogger logger, IConfiguration config)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(o =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
                 {
-                    o.TokenValidationParameters = new TokenValidationParameters
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-
                         ValidIssuer = config["Authentication:JWT:Issuer"],
                         ValidAudience = config["Authentication:JWT:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(config["Authentication:JWT:SecurityKey"]))
                     };
                 });
             services.AddAuthorization();
@@ -51,20 +54,63 @@ namespace Serdiuk.ToDoList.API.Extensions
                 })
                 .AddEntityFrameworkStores<AuthDbContext>()
                 .AddDefaultTokenProviders();
-            
+
             logger.LogInformation("Configured Identity service.");
         }
-        public static void ConfigureSwagger(this IServiceCollection services, ILogger logger)
+        public static void ConfigureSwagger(this IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-                {
-                    Title = "Todo List API",
-                    Version = "v1",
 
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Description = "This is Todo List API",
+                    Version = "1",
+                    Title = "TODO API",
                 });
+
+
+                var url = configuration.GetValue<string>("Authentication:JWT:Url");
+                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.OAuth2,
+                    In = ParameterLocation.Header,
+                    BearerFormat = "JWT",
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        Password = new OpenApiOAuthFlow
+                        {
+                            TokenUrl = new Uri($"{url}Account/Login", UriKind.Absolute),
+                            AuthorizationUrl = new Uri($"{url}Account/Login", UriKind.Absolute),
+                            Scopes = new Dictionary<string, string>
+                            {
+                                { configuration.GetValue<string>("Authentication:JWT:Audience"), "Todo List Api" }
+                            },
+                        }
+                    },
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "oauth2"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                }
+            );
             });
+
             logger.LogInformation("Configured Swagger.");
         }
         public static void ConfigureRepository(this IServiceCollection services, ILogger logger)

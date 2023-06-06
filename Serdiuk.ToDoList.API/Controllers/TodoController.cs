@@ -29,10 +29,14 @@ namespace Serdiuk.ToDoList.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var user = await _userManager.GetUserAsync(User);
+            if (UserId == null)
+            {
+                throw new TodoUnathorizeException();
+            } 
+
             var list = await _todoService.GetAll(UserId);
 
-            _logger.LogInformation("Returned all todos to: {Email}", user.Email);
+            _logger.LogInformation("Returned all todos to: {Email}", UserId);
 
             return Ok(list);
         }
@@ -40,50 +44,45 @@ namespace Serdiuk.ToDoList.API.Controllers
         [HttpGet("complete")]
         public async Task<IActionResult> GetComplete()
         {
-            var user = await _userManager.GetUserAsync(User);
 
             var list = await _todoService.GetCompleteToDoAsync(UserId);
-            _logger.LogInformation("Returned completed todos to: {Email}", user.Email);
+            _logger.LogInformation("Returned completed todos to: {Email}", UserId);
             return Ok(list);
         }
         [HttpGet("get/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var user = await _userManager.GetUserAsync(User);
 
             var todo = await _todoService.GetById(id, UserId);
-            _logger.LogInformation("Returned todo to: {Email} with {id} Id", user.Email, todo.Id);
+            _logger.LogInformation("Returned todo to: {Email} with {id} Id", UserId, UserId);
             return Ok(todo);
         }
         [HttpGet("incomplete")]
         public async Task<IActionResult> GetIncomplete()
         {
-            var user = await _userManager.GetUserAsync(User);
 
             var list = await _todoService.GetIncompleteToDoAsync(UserId);
-            _logger.LogInformation("Returned incompleted todos to: {Email}", user.Email);
+            _logger.LogInformation("Returned incompleted todos to: {Email}", UserId);
             return Ok(list);
         }
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateToDoItemDto dto)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            if (UserId == null)
             {
                 throw new TodoUnathorizeException();
             }
             var id = await _todoService.AddToDoAsync(dto, UserId);
-            _logger.LogInformation("Create new todo to: {Email} with {id} Id", user.Email,id);
+            _logger.LogInformation("Create new todo to: {Email} with {id} Id", UserId, id);
             return CreatedAtAction(Url.Action(nameof(GetById)), new { Id = id });
         }
         [HttpDelete("delete")]
         public async Task<IActionResult> Delete([FromBody] DeleteToDoItemDto dto)
         {
-            var user = await _userManager.GetUserAsync(User);
 
             var id = await _todoService.DeleteToDoAsync(dto, UserId);
 
-            _logger.LogInformation("Delete todo with {id} Id from user {Email}", id, user.Email);
+            _logger.LogInformation("Delete todo with {id} Id from user {Email}", id, UserId);
             return NoContent();
         }
         [HttpPut("done")]

@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Seed\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Serdiuk.ToDoList.Application\Serdiuk.ToDoList.Application.csproj" />
     <ProjectReference Include="..\Serdiuk.ToDoList.Domain\Serdiuk.ToDoList.Domain.csproj" />
   </ItemGroup>
