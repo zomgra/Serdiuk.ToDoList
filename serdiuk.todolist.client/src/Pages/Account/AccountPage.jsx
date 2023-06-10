@@ -14,17 +14,21 @@ const AccountPage = () => {
         <div className='signin-form'>
             <form className='input-group' onSubmit={(e) => handleForm(e)}>
                 {isLoginPage ? (
-                    <>
+                    <div className='row'>
                         <LoginForm />
-                        <a className='btn btn-primary' onClick={(e) => { setLoginPage(false) }}>Create account</a>
-                        <button type='submit' className='btn btn-info'>Log in</button>
-                    </>
+                        <div className='row mx-3 col-3'>
+                            <a className='btn btn-primary mb-1' onClick={(e) => { setLoginPage(false) }}>Create account</a>
+                            <button type='submit' className='btn btn-info'>Log in</button>
+                        </div>
+                    </div>
                 ) : (
-                    <>
+                    <div className='row'>
                         <RegisterForm />
-                        <a className='btn col-6 btn-primary' onClick={(e) => { setLoginPage(true) }}>Already have account</a>
-                        <button type='submit' className='btn btn-info'>Create account</button>
-                    </>
+                        <div className='row mx-3 col-3'>
+                            <a className='btn my-3 btn-primary' onClick={(e) => { setLoginPage(true) }}>Already have account</a>
+                            <button type='submit' className='btn btn-info'>Create account</button>
+                        </div>
+                    </div>
                 )}
             </form>
         </div>

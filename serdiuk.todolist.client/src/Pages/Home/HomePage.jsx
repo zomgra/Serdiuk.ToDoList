@@ -24,7 +24,6 @@ const HomePage = () => {
                 setTodos(await getTodosWith(completed));
             }
         }
-        //createTestTodo();
         fetchTodos();
     }, [])
 
@@ -45,7 +44,7 @@ const HomePage = () => {
     }
 
     return (
-        <div>
+        <div className=''>
             {todos.length > 0 || todos ? (<>
                 <TodoList todos={todos} handleDelete={handleDelete} handleDone={handleDone} handleEditTitle={handleEditTitle} />
             </>) : (<></>)}
